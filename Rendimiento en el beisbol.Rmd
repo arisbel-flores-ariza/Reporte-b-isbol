@@ -1,0 +1,107 @@
+---
+title: "Rendimiento de beisbol"
+author: "Arisbel Flores Ariza"
+date: "2025-05-26"
+output:
+  html_document:
+    theme: cerulean
+    highlight: tango
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## Introducción
+
+El beisbol es un deporte conocido a nivel mundial que ha generado una gran cantidad de datos estadísticos.
+Dentro de este análisis se busca conocer la relación entre la cantidad de carreras realizadas por los jugadores de acuerdo con la cantidad de veces en que jugaron.
+Para lograr lo anterior se analizó la infomación contenida en el dataset baseball_hitting.csv 
+
+## Cargar paquetes necesarios
+
+```{r packages}
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(ggthemes)
+
+```
+
+## Exploración y limpieza de datos
+
+Con el objetivo de analizar estos datos se llevo a cabo una exploración de la información contenida, se determino el tipo de variables presentes y se realizo un resúmen estadístico.
+Con lo anterior, se buscaron valores faltantes que posteriormente fueron eliminados para una mejor visualización de la información.
+
+```{r Baseball hitting, echo=FALSE}
+data <- read.csv("baseball_hitting.csv")
+
+#Muestra de las primeras seis filas del data
+head(data)
+
+#organización y tipos de variables
+str(data)
+
+#Resumen estadístico del data
+summary("baseball_hitting.csv")
+
+#Valores faltantes
+anyNA(data)
+
+#Sí hay presencia de NA (True)
+sum(is.na(data)) #Total de valores faltantes
+colSums(is.na(data)) #Número de NA por columna
+
+#Eliminar los datos faltantes
+data_limpios <- na.omit(data)
+
+#Seleccionar las columnas Games y Runs
+#Games
+Juegos <- data_limpios$Games
+
+#Carrreras
+Carreras <- data_limpios$Runs
+
+
+```
+
+
+## Carreras realizadas - Diagrama de dispersión
+
+**Análisis** La tendencia general nos muestra que a mayor número de juegos incremeta el total de carreras realizadas por jugador, sin embargo, hay presencia de valores atípicos.
+Lo anterior, nos indica que hay jugadores que consiguieron un mayor número de carreras anotadas estando en menos juegos, esto habla de un mejor rendimiento de juego.
+
+```{r Diagrama de dispersión}
+#1ro. Diagrama de dispersión que me permita visualizar la siguiente hipótesis: "A mayor número de juegos mayor número de carreras"
+ggplot(data_limpios, aes(x = Juegos, y = Carreras, color = Player.name)) +
+  geom_point(size =5) +
+  labs(title = "Carreras vs Juegos",
+       x = "Juegos",
+       y = "Carreras",
+       color = "Jugador") +
+  guides(color = "none") +
+  theme_minimal()
+```
+
+## Frecuencia de los Home Runs - Histograma
+
+**Análisis**
+Sobre la frecuencia con que los jugadores realizaban Home runs, es posible notar que es más frecuente que éstos se concentran en un rango de 0-200, decayendo a partir de este punto en adelante.
+Siendo más común que los jugadores anotarán de 60 a 70 carreras.
+
+```{r Histograma}
+#2do. Histograma para ver la distribución de la variable home.run
+ggplot(data_limpios,aes(x = home.run)) +
+  geom_histogram(binwidth = 5, fill = "steelblue", color = "white") +
+  labs(title = "Distribución de Home Runs",
+       x ="Home Runs",
+       y = "Frecuencia") +
+  theme_minimal()
+```
+
+## Conclusiones
+Con el análisis realizado se puede concluir que hay una correlación positiva entre la cantidad de carreras realizados con el total de juegos en que estuvieron los jugadores.
+Así como podemos concluir que hay mayor frecuencia de jugadores que realizan hasta 70 home runs, disminuyendo tal frecuencia conforme el número de home runs anotados aumenta.
+Finalmente, como una posible línea futura de análisis se rescata la importancia de observar la relación entre las carreras anotadas de acuerdo con los juegos en que estuvieron presentes los jugadores debido a que esto representa el rendimiento del jugador frente a un deporte tan demandante como es el baseball. 
